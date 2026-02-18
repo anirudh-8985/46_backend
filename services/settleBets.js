@@ -92,13 +92,17 @@
 import Bet from "../models/Bet.js";
 import User from "../models/User.js";
 import fetch from "node-fetch";
-
+import dotenv from "dotenv";
+dotenv.config();
 export async function settleBets() {
 
   try {
 
     // Fetch latest match data
-    const res = await fetch("http://localhost:5000/api/matches");
+    const BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
+
+    const res = await fetch(`${BASE_URL}/api/matches`);
+
     const data = await res.json();
 
     const matches = data.data || [];
