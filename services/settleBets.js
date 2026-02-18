@@ -100,9 +100,9 @@ export async function settleBets() {
 
     // Fetch latest match data
     const BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
-    console.log("Calling:", `${BASE_URL}/api/matches`);
+    console.log("Calling:", `${BASE_URL}api/matches`);
 
-    const res = await fetch(`${BASE_URL}/api/matches`);
+    const res = await fetch(`${BASE_URL}api/matches`);
 
 
     if (!res.ok) {
