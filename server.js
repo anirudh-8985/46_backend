@@ -26,7 +26,7 @@ setInterval(settleBets, 30000);
 
 const app = express();
 app.use(cors({
-  origin: ["http://localhost:5173", "https://four6-frontend.onrender.com"],
+  origin: ["https://four6-frontend.onrender.com"],
   credentials: true
 }));
 // app.use(cors({
