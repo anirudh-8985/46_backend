@@ -86,9 +86,11 @@ router.post("/login", async (req, res) => {
 
 
     res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-    });
+  httpOnly: true,
+  secure: true,        // ✅ REQUIRED on HTTPS
+  sameSite: "none",    // ✅ REQUIRED cross-site
+});
+
 
 
     res.json({
