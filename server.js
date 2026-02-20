@@ -48,6 +48,7 @@ app.use("/api/admin", adminRoutes);
 
 // Protect bet routes
 app.use("/api/bets", betRoutes);
+app.use("/api/admin/reports", adminReports);
 
 // Odds
 app.use("/api/matches", oddsRoutes);

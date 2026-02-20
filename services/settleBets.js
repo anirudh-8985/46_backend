@@ -1,93 +1,3 @@
-// import Bet from "../models/Bet.js";
-// import User from "../models/User.js";
-// import fetch from "node-fetch";
-
-
-// export async function settleBets() {
-
-//   try {
-
-//     const res = await fetch("http://localhost:5000/api/matches");
-
-//     const data = await res.json();
-
-//     const matches = data.data;
-
-
-//     /* Get all pending bets */
-
-//     const pendingBets = await Bet.find({
-//       status: "PENDING",
-//     });
-
-
-//     for (let bet of pendingBets) {
-
-//       const match = matches.find(
-//         m => m.id === bet.matchId
-//       );
-
-//       if (!match) continue;
-
-
-//       let isWinner = false;
-
-
-//       /* H2H */
-
-//       if (bet.betType === "h2h") {
-
-//         if (match.winner === bet.teamSelected) {
-//           isWinner = true;
-//         }
-
-//       }
-
-
-//       /* QUESTION */
-
-//       if (bet.betType === "question") {
-
-//         const q =
-//           match.questions?.[bet.questionIndex];
-
-//         if (q?.winner === bet.teamSelected) {
-//           isWinner = true;
-//         }
-
-//       }
-
-
-//       /* UPDATE */
-
-//       if (isWinner) {
-
-//         bet.status = "WON";
-
-//         const user = await User.findById(bet.userId);
-
-//         user.balance += bet.possibleWin;
-
-//         await user.save();
-
-//       } else if (match.winner) {
-
-//         // Match finished but user lost
-//         bet.status = "LOST";
-//       }
-
-
-//       await bet.save();
-
-//     }
-
-//     console.log("✅ Bets settled");
-
-//   } catch (err) {
-
-//     console.error("Settlement error:", err);
-//   }
-// }
 
 import Bet from "../models/Bet.js";
 import User from "../models/User.js";
@@ -142,7 +52,7 @@ export async function settleBets() {
 
         if (!match.winner) continue; // not finished
 
-        if (match.winner === "DRAW") {
+        if (match.winner === "draw") {
           result = "DRAW";
         }
         else if (match.winner === bet.teamSelected) {
@@ -158,16 +68,16 @@ export async function settleBets() {
       /* ================= QUESTION ================= */
 
       if (bet.betType === "question") {
-
-        const q =
-          match.questions?.[bet.questionIndex];
-
+        console.debug("Qurstion",bet.betType,"---",bet.questionIndex)
+        const q = match.questions?.[bet.questionIndex];
+        
         if (!q?.winner) continue; // not finished
 
-        if (q.winner === "DRAW") {
+        if (q.winner === "draw") {
           result = "DRAW";
         }
         else if (q.winner === bet.teamSelected) {
+          
           result = "WON";
         }
         else {

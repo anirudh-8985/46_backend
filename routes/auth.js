@@ -86,12 +86,9 @@ router.post("/login", async (req, res) => {
 
 
     res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // REQUIRED for HTTPS
-  sameSite: "None",    // REQUIRED for cross-domain
-  maxAge: 7 * 24 * 60 * 60 * 1000
-});
-
+      httpOnly: true,
+      sameSite: "lax",
+    });
 
 
     res.json({
@@ -129,16 +126,30 @@ router.post("/logout", (req, res) => {
 
 /* ================= GET PROFILE ================= */
 
+/* ================= GET CURRENT USER ================= */
+
 router.get("/me", auth, async (req, res) => {
 
-  const user = await User.findById(req.user.id)
-    .select("-password");
+  try {
 
-  res.json({
-    user
-  });
+    const user = await User.findById(req.user.id)
+      .select("-password");
 
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
+    res.json({ user });
+
+  } catch (err) {
+
+    res.status(500).json({
+      error: "Failed to load user"
+    });
+
+  }
 });
+
 
 router.post("/update-profile", auth, async (req, res) => {
 
