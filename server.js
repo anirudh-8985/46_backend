@@ -10,6 +10,7 @@ import betRoutes from "./routes/bets.js";
 import oddsRoutes from "./routes/matches.js";
 import { settleBets } from "./services/settleBets.js";
 // import authRoutes from "./routes/auth.js";
+import adminReports from "./routes/adminReports.js";
 
 
 
