@@ -22,6 +22,8 @@ connectDB();
 setInterval(settleBets, 30000);
 
 const app = express();
+app.set("trust proxy", 1);
+
 app.use(cors({
   origin: [process.env.API_BASE_URL],
   credentials: true

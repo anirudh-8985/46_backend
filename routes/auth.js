@@ -117,11 +117,13 @@ router.post("/login", async (req, res) => {
 
 router.post("/logout", (req, res) => {
 
-  res.clearCookie("token");
-
-  res.json({
-    success: true,
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
   });
+
+  res.json({ success: true });
 
 });
 
