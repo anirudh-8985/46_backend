@@ -2,7 +2,8 @@ import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 dotenv.config();
-
+import LiveMatch from "../models/LiveMatch.js";
+import Question from "../models/Question.js";
 const router = express.Router();
 
 /* ================= CONFIG ================= */
@@ -17,14 +18,6 @@ const DATE_FORMAT = "iso";
 
 /* ================= SHEETS ================= */
 
-const QUESTION_SHEET =
-  "https://opensheet.elk.sh/1es9tAOJ67ZKWr1HrMmeOOhijNTST1qNdOMfXaNsp_mo/Sheet1";
-
-const LIVE_SHEET =
-  "https://opensheet.elk.sh/1Abhs7G8-2fK2M1CNm8WCNnDqdGK4u0U1kPv4K8AzbRE/Sheet1";
-
-
-/* ================= HELPERS ================= */
 
 // Normalize team name
 function normalizeTeam(name = "") {
@@ -88,33 +81,17 @@ router.get("/", async (req, res) => {
 
     /* ================= FETCH SHEETS ================= */
 
-    // const [qRes, lRes] = await Promise.all([
-    //   fetch(QUESTION_SHEET),
-    //   fetch(LIVE_SHEET),
-    // ]);
-    const qRes = await safeFetch(QUESTION_SHEET);
-    // console.debug("ques",qRes)
-    const lRes = await safeFetch(LIVE_SHEET);
-    // console.debug("lqwhud",lRes)
-    if (!qRes.ok || !lRes.ok) {
-      throw new Error("Sheet API failed");
-    }
-
-    const questions = await qRes.json();
-    const live = await lRes.json();
-
+   
 
     /* ================= MAP QUESTIONS ================= */
-
+    const questions = await Question.find();
     const questionMap = {};
 
-    if (Array.isArray(questions)) {
+    questions.forEach(q => {
 
-      questions.forEach(q => {
+        if (!q.matchId) return; // ✅ use matchId from DB
 
-        if (!q.ID) return;
-
-        const id = normalizeId(q.ID);
+        const id = normalizeId(q.matchId);
 
         if (!questionMap[id]) {
           questionMap[id] = [];
@@ -122,56 +99,53 @@ router.get("/", async (req, res) => {
 
         questionMap[id].push({
 
+          questionId: q._id || null,
+
           question: q.question || null,
 
-          team1: q.team_name_1 || null,
-          team2: q.team_name_2 || null,
+
+          team1: q.team1 || null,
+          team2: q.team2 || null,
 
           odds1: Number(q.odds1) || null,
           odds2: Number(q.odds2) || null,
 
           winner: q.question_won || null,
 
-          active:
-            String(q.to_be_kept || "")
-              .toLowerCase() === "yes"
+          active: q.to_be_kept === true // ✅ boolean now
         });
 
       });
-    }
 
 
     /* ================= MAP LIVE ================= */
+    const liveData = await LiveMatch.find();
 
-    const liveMap = {};
+      const liveMap = {};
 
-    if (Array.isArray(live)) {
+      liveData.forEach(l => {
 
-      live.forEach(l => {
+        if (!l.matchId) return;   // ✅ use matchId
 
-        if (!l.ID) return;
-
-        const id = normalizeId(l.ID);
+        const id = normalizeId(l.matchId);
 
         liveMap[id] = {
 
-          live:
-            String(l.live || "")
-              .toLowerCase() === "yes",
+          live: l.live === true || l.live === "yes",
 
-          homeRuns: l.homeTeam_runs || null,
-          homeWickets: l.homeTeam_wickets || null,
-          homeOvers: l.homeTeam_overs || null,
+          homeRuns: l.homeRuns ?? null,
+          homeWickets: l.homeWickets ?? null,
+          homeOvers: l.homeOvers ?? null,
 
-          awayRuns: l.awayTeam_runs || null,
-          awayWickets: l.awayTeam_wickets || null,
-          awayOvers: l.awayTeam_overs || null,
+          awayRuns: l.awayRuns ?? null,
+          awayWickets: l.awayWickets ?? null,
+          awayOvers: l.awayOvers ?? null,
 
-          winner: l.team_won || null
+          winner: l.winner ?? null
         };
 
       });
-    }
+    
 
 
     /* ================= MERGE ================= */

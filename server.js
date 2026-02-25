@@ -9,13 +9,9 @@ import authRoutes from "./routes/auth.js";
 import betRoutes from "./routes/bets.js";
 import oddsRoutes from "./routes/matches.js";
 import { settleBets } from "./services/settleBets.js";
-// import authRoutes from "./routes/auth.js";
 import adminReports from "./routes/adminReports.js";
-
-
-
-import auth from "./middleware/auth.js";   // ✅ IMPORT AUTH
-
+import questionRoutes from "./routes/questions.js";
+import updaterRoutes from "./routes/updater.js"
 import cookieParser from "cookie-parser";
 
 
@@ -27,18 +23,16 @@ setInterval(settleBets, 30000);
 
 const app = express();
 app.use(cors({
-  origin: ["https://four6-frontend.onrender.com"],
+  origin: [process.env.API_BASE_URL],
   credentials: true
 }));
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   credentials: true
-// }));
+
 
 app.use(express.json());
 
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
+app.use("/api/updater",updaterRoutes);
 
 
 
@@ -46,6 +40,7 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/questions", questionRoutes);
 
 // Protect bet routes
 app.use("/api/bets", betRoutes);

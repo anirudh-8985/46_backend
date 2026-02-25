@@ -17,7 +17,7 @@ const betSchema = new mongoose.Schema({
     required: true
   },
 
-  questionIndex: Number,
+  questionIndex: String,
 
   odds: Number,
   amount: Number,

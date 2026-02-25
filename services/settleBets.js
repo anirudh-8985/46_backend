@@ -9,6 +9,7 @@ export async function settleBets() {
   try {
 
     // Fetch latest match data
+    
     const BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
     console.log("Calling:", `${BASE_URL}api/matches`);
 
@@ -68,8 +69,18 @@ export async function settleBets() {
       /* ================= QUESTION ================= */
 
       if (bet.betType === "question") {
-        console.debug("Qurstion",bet.betType,"---",bet.questionIndex)
-        const q = match.questions?.[bet.questionIndex];
+        // console.debug("Qurstion",bet.betType,"---",bet.questionIndex)
+        // const q = match.questions?.[bet.questionIndex];
+        console.log("BET questionId:", bet.questionId);
+
+console.log(
+  "MATCH questions:",
+  match.questions?.map(q => q.questionId)
+);
+        const q = match.questions?.find(
+  ques => String(ques.questionId) === String(bet.questionIndex)
+);
+        console.debug("Question ===",q)
         
         if (!q?.winner) continue; // not finished
 
